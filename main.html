@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>초시공 네트워크</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -464,6 +465,16 @@
             object-fit: cover;
         }
 
+        .supabase-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
         /* === 모달 === */
         .modal {
             position: fixed;
@@ -747,6 +758,10 @@
                             <button class="admin-logout-btn" onclick="adminLogout()">로그아웃</button>
                         </div>
 
+                        <div class="supabase-notice" id="supabaseNotice">
+                            ⚠️ Supabase가 설정되지 않았습니다. 데이터는 브라우저에만 저장됩니다.
+                        </div>
+
                         <!-- 새 글 작성 -->
                         <div class="admin-section">
                             <h3>📝 새 글 작성</h3>
@@ -822,6 +837,25 @@
     <script>
         console.log('🎉 초시공 네트워크 메인 시작...');
         
+        // === Supabase 설정 (옵션) ===
+        // Supabase를 사용하려면 아래 값들을 실제 값으로 변경하세요
+        const SUPABASE_URL = 'https://YOUR_PROJECT_URL.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+        
+        let supabase = null;
+        let useSupabase = false;
+        
+        // Supabase 초기화 시도
+        if (SUPABASE_URL !== 'https://YOUR_PROJECT_URL.supabase.co' && SUPABASE_ANON_KEY !== 'YOUR_ANON_KEY') {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                useSupabase = true;
+                console.log('✅ Supabase 연결됨');
+            } catch (error) {
+                console.log('⚠️ Supabase 연결 실패, localStorage 사용');
+            }
+        }
+        
         // === 전역 변수 ===
         let posts = [];
         let images = [];
@@ -830,55 +864,96 @@
         let isAdminLoggedIn = false;
         const ADMIN_PASSWORD = 'no.4';
 
-        // === 미리 데이터 추가 ===
-        function loadDemoData() {
-            posts = [
-                {
-                    id: 1,
-                    title: "초시공 네트워크에 오신 것을 환영합니다",
-                    content: "이곳은 시공간을 초월한 디지털 공간입니다.\n\n다양한 차원의 정보와 이야기들이 교차하는 특별한 장소입니다.\n\n관리자 로그인을 통해 새로운 콘텐츠를 추가할 수 있습니다.",
-                    created_at: "2024-12-01T10:00:00.000Z"
-                },
-                {
-                    id: 2,
-                    title: "차원 이동 로그 #001",
-                    content: "오늘 새로운 차원을 발견했습니다.\n\n좌표: X-742, Y-338, Z-901\n상태: 안정\n\n이 차원은 특이하게도 시간의 흐름이 역방향으로 진행됩니다.\n과거로 향하는 메시지들을 확인할 수 있었습니다.\n\n추가 탐사가 필요합니다.",
-                    created_at: "2024-12-02T14:30:00.000Z"
-                },
-                {
-                    id: 3,
-                    title: "연결된 세계들",
-                    content: "네트워크를 통해 연결된 다양한 세계들:\n\n1. 디지털 공간\n2. 물리적 현실\n3. 의식의 영역\n4. 상상의 차원\n\n각각의 세계는 고유한 법칙과 특성을 가지고 있으며,\n초시공 네트워크를 통해 상호작용합니다.",
-                    created_at: "2024-12-03T09:15:00.000Z"
-                },
-                {
-                    id: 4,
-                    title: "시간 여행자의 메모",
-                    content: "2157년에서 온 메시지:\n\n'과거의 여러분에게 전합니다.\n미래는 여러분이 만드는 선택들로 이루어집니다.\n\n기술과 인간성의 균형을 잃지 마세요.\n초시공 네트워크는 그 균형의 상징입니다.'\n\n- 미래의 네트워크 관리자",
-                    created_at: "2024-12-04T18:45:00.000Z"
-                }
-            ];
+        // === 데이터 로드 ===
+        async function loadData() {
+            if (useSupabase) {
+                await loadDataFromSupabase();
+            } else {
+                loadLocalData();
+            }
+        }
 
-            images = [
-                {
-                    id: 'demo1',
-                    name: '차원의_문.jpg',
-                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2dyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iNTAiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4zKSIvPgo8dGV4dCB4PSIxNTAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCI+8J+MgCDssKjsm5Q8L3RleHQ+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNGY0NmU1O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3YzNhZWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2Zz4K',
-                    created_at: "2024-12-01T10:00:00.000Z"
-                },
-                {
-                    id: 'demo2',
-                    name: '시공간_지도.png',
-                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMGQxMTE3Ii8+CjxwYXRoIGQ9Ik01MCA1MEwxMDAgMzBMMTUwIDgwTDIwMCA0MEwyNTAgNzBMMjgwIDUwIiBzdHJva2U9IiM2NjY2ZmYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNMjAgMTIwTDgwIDEwMEwxNDAgMTQwTDE4MCA5MEwyNDAgMTMwTDI5MCAyMDAiIHN0cm9rZT0iIzY2ZmY2NiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjgwIiByPSI1IiBmaWxsPSIjZmY2NjY2Ii8+CjxjaXJjbGUgY3g9IjIwMCIgY3k9IjQwIiByPSI1IiBmaWxsPSIjZmZmZjY2Ii8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjE0MCIgcj0iNSIgZmlsbD0iIzY2ZmZmZiIvPgo8dGV4dCB4PSIxNTAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiI+8J+XuuKchO+4jyDsl5DqtJnrkJwg7KeA64+EPC90ZXh0Pgo8L3N2Zz4K',
-                    created_at: "2024-12-02T14:30:00.000Z"
-                },
-                {
-                    id: 'demo3',
-                    name: '네트워크_허브.gif',
-                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI25ldEdyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI3NSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9Ijc1IiBjeT0iMTQwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjE0MCIgcj0iMTAiIGZpbGw9IiM2NmZmNjYiIG9wYWNpdHk9IjAuNyIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iNzUiIHkyPSI2MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iMjI1IiB5Mj0iNjAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPGxpbmUgeDE9IjE1MCIgeTE9IjEwMCIgeDI9Ijc1IiB5Mj0iMTQwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CjxsaW5lIHgxPSIxNTAiIHkxPSIxMDAiIHgyPSIyMjUiIHkyPSIxNDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPHR5ZXQgeD0iMTUwIiB5PSIxOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPvCfpKEg64Kg7Yq47JuM7YGs7ZuICOygleuztDwvdGV4dD4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0ibmV0R3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTE2NWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzMzMTY2NjtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K',
-                    created_at: "2024-12-03T09:15:00.000Z"
-                }
-            ];
+        // Supabase에서 데이터 로드
+        async function loadDataFromSupabase() {
+            try {
+                const { data: postsData, error: postsError } = await supabase
+                    .from('posts')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (postsError) throw postsError;
+                posts = postsData || [];
+                
+                const { data: imagesData, error: imagesError } = await supabase
+                    .from('images')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (imagesError) throw imagesError;
+                images = imagesData || [];
+                
+                console.log('✅ Supabase에서 데이터 로드 완료');
+                updatePostList();
+                updateGallery();
+                
+            } catch (error) {
+                console.error('❌ Supabase 데이터 로드 실패:', error);
+                useSupabase = false;
+                loadLocalData();
+            }
+        }
+
+        // localStorage에서 데이터 로드
+        function loadLocalData() {
+            // 기본 데모 데이터
+            const demoData = {
+                posts: [
+                    {
+                        id: 1,
+                        title: "초시공 네트워크에 오신 것을 환영합니다",
+                        content: "이곳은 시공간을 초월한 디지털 공간입니다.\n\n다양한 차원의 정보와 이야기들이 교차하는 특별한 장소입니다.\n\n관리자 로그인을 통해 새로운 콘텐츠를 추가할 수 있습니다.",
+                        created_at: "2024-12-01T10:00:00.000Z"
+                    },
+                    {
+                        id: 2,
+                        title: "차원 이동 로그 #001",
+                        content: "오늘 새로운 차원을 발견했습니다.\n\n좌표: X-742, Y-338, Z-901\n상태: 안정\n\n이 차원은 특이하게도 시간의 흐름이 역방향으로 진행됩니다.\n과거로 향하는 메시지들을 확인할 수 있었습니다.\n\n추가 탐사가 필요합니다.",
+                        created_at: "2024-12-02T14:30:00.000Z"
+                    },
+                    {
+                        id: 3,
+                        title: "연결된 세계들",
+                        content: "네트워크를 통해 연결된 다양한 세계들:\n\n1. 디지털 공간\n2. 물리적 현실\n3. 의식의 영역\n4. 상상의 차원\n\n각각의 세계는 고유한 법칙과 특성을 가지고 있으며,\n초시공 네트워크를 통해 상호작용합니다.",
+                        created_at: "2024-12-03T09:15:00.000Z"
+                    },
+                    {
+                        id: 4,
+                        title: "시간 여행자의 메모",
+                        content: "2157년에서 온 메시지:\n\n'과거의 여러분에게 전합니다.\n미래는 여러분이 만드는 선택들로 이루어집니다.\n\n기술과 인간성의 균형을 잃지 마세요.\n초시공 네트워크는 그 균형의 상징입니다.'\n\n- 미래의 네트워크 관리자",
+                        created_at: "2024-12-04T18:45:00.000Z"
+                    }
+                ],
+                images: [
+                    {
+                        id: 'demo1',
+                        name: '차원의_문.jpg',
+                        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2dyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iNTAiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4zKSIvPgo8dGV4dCB4PSIxNTAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCI+8J+MgCDssKjsm5Q8L3RleHQ+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNGY0NmU1O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3YzNhZWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2Zz4K',
+                        created_at: "2024-12-01T10:00:00.000Z"
+                    },
+                    {
+                        id: 'demo2',
+                        name: '시공간_지도.png',
+                        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMGQxMTE3Ii8+CjxwYXRoIGQ9Ik01MCA1MEwxMDAgMzBMMTUwIDgwTDIwMCA0MEwyNTAgNzBMMjgwIDUwIiBzdHJva2U9IiM2NjY2ZmYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNMjAgMTIwTDgwIDEwMEwxNDAgMTQwTDE4MCA5MEwyNDAgMTMwTDI5MCAyMDAiIHN0cm9rZT0iIzY2ZmY2NiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjgwIiByPSI1IiBmaWxsPSIjZmY2NjY2Ii8+CjxjaXJjbGUgY3g9IjIwMCIgY3k9IjQwIiByPSI1IiBmaWxsPSIjZmZmZjY2Ii8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjE0MCIgcj0iNSIgZmlsbD0iIzY2ZmZmZiIvPgo8dGV4dCB4PSIxNTAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiI+8J+XuuKchO+4jyDsl5DqtJnrkJwg7KeA64+EPC90ZXh0Pgo8L3N2Zz4K',
+                        created_at: "2024-12-02T14:30:00.000Z"
+                    },
+                    {
+                        id: 'demo3',
+                        name: '네트워크_허브.gif',
+                        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI25ldEdyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI3NSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9Ijc1IiBjeT0iMTQwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjE0MCIgcj0iMTAiIGZpbGw9IiM2NmZmNjYiIG9wYWNpdHk9IjAuNyIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iNzUiIHkyPSI2MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iMjI1IiB5Mj0iNjAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPGxpbmUgeDE9IjE1MCIgeTE9IjEwMCIgeDI9Ijc1IiB5Mj0iMTQwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CjxsaW5lIHgxPSIxNTAiIHkxPSIxMDAiIHgyPSIyMjUiIHkyPSIxNDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPHR5ZXQgeD0iMTUwIiB5PSIxOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPvCfpKEg64Kg7Yq47JuM7YGs7ZuICOygleuztDwvdGV4dD4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0ibmV0R3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTE2NWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzMzMTY2NjtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K',
+                        created_at: "2024-12-03T09:15:00.000Z"
+                    }
+                ]
+            };
 
             // localStorage에서 데이터 불러오기
             const savedPosts = localStorage.getItem('cosmosNetworkPosts');
@@ -886,16 +961,26 @@
             
             if (savedPosts) {
                 posts = JSON.parse(savedPosts);
+            } else {
+                posts = demoData.posts;
             }
+            
             if (savedImages) {
                 images = JSON.parse(savedImages);
+            } else {
+                images = demoData.images;
             }
+            
+            updatePostList();
+            updateGallery();
         }
 
         // === 데이터 저장 ===
         function saveData() {
-            localStorage.setItem('cosmosNetworkPosts', JSON.stringify(posts));
-            localStorage.setItem('cosmosNetworkImages', JSON.stringify(images));
+            if (!useSupabase) {
+                localStorage.setItem('cosmosNetworkPosts', JSON.stringify(posts));
+                localStorage.setItem('cosmosNetworkImages', JSON.stringify(images));
+            }
         }
 
         // === 창 관리 ===
@@ -960,12 +1045,19 @@
         function showAdminDashboard() {
             document.getElementById('adminLogin').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
+            
+            // Supabase 알림 표시/숨기기
+            const notice = document.getElementById('supabaseNotice');
+            if (notice) {
+                notice.style.display = useSupabase ? 'none' : 'block';
+            }
+            
             updateAdminPostList();
             updateAdminImageList();
         }
 
-        // === 관리자 기능 ===
-        function addPost() {
+        // === 관리자 기능 - 글 추가 ===
+        async function addPost() {
             const titleInput = document.getElementById('postTitle');
             const contentInput = document.getElementById('postContent');
             
@@ -977,31 +1069,92 @@
                 return;
             }
             
-            const newPost = {
-                id: Date.now(),
-                title: title,
-                content: content,
-                created_at: new Date().toISOString()
-            };
-            
-            posts.unshift(newPost);
-            saveData();
-            
-            titleInput.value = '';
-            contentInput.value = '';
-            
-            updateAdminPostList();
-            alert('글이 추가되었습니다!');
+            if (useSupabase) {
+                try {
+                    const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
+                    if (adminPassword !== ADMIN_PASSWORD) {
+                        alert('권한이 없습니다!');
+                        return;
+                    }
+                    
+                    const { data, error } = await supabase
+                        .from('posts')
+                        .insert([{ title: title, content: content }])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    posts.unshift(data);
+                    titleInput.value = '';
+                    contentInput.value = '';
+                    
+                    updatePostList();
+                    updateAdminPostList();
+                    alert('글이 추가되었습니다!');
+                    
+                } catch (error) {
+                    console.error('❌ 글 추가 실패:', error);
+                    alert('글 추가에 실패했습니다. 다시 시도해주세요.');
+                }
+            } else {
+                const newPost = {
+                    id: Date.now(),
+                    title: title,
+                    content: content,
+                    created_at: new Date().toISOString()
+                };
+                
+                posts.unshift(newPost);
+                saveData();
+                
+                titleInput.value = '';
+                contentInput.value = '';
+                
+                updateAdminPostList();
+                updatePostList();
+                alert('글이 추가되었습니다!');
+            }
         }
 
-        function deletePost(postId) {
+        // === 관리자 기능 - 글 삭제 ===
+        async function deletePost(postId) {
             if (!confirm('정말 이 글을 삭제하시겠습니까?')) return;
             
-            posts = posts.filter(p => p.id !== postId);
-            saveData();
-            updateAdminPostList();
+            if (useSupabase) {
+                try {
+                    const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
+                    if (adminPassword !== ADMIN_PASSWORD) {
+                        alert('권한이 없습니다!');
+                        return;
+                    }
+                    
+                    const { error } = await supabase
+                        .from('posts')
+                        .delete()
+                        .eq('id', postId);
+                    
+                    if (error) throw error;
+                    
+                    posts = posts.filter(p => p.id !== postId);
+                    updatePostList();
+                    updateAdminPostList();
+                    alert('글이 삭제되었습니다!');
+                    
+                } catch (error) {
+                    console.error('❌ 글 삭제 실패:', error);
+                    alert('글 삭제에 실패했습니다.');
+                }
+            } else {
+                posts = posts.filter(p => p.id !== postId);
+                saveData();
+                updateAdminPostList();
+                updatePostList();
+                alert('글이 삭제되었습니다!');
+            }
         }
 
+        // === 이미지 미리보기 ===
         function previewImage() {
             const fileInput = document.getElementById('imageFile');
             const preview = document.getElementById('imagePreview');
@@ -1017,7 +1170,8 @@
             }
         }
 
-        function addImage() {
+        // === 관리자 기능 - 이미지 추가 ===
+        async function addImage() {
             const fileInput = document.getElementById('imageFile');
             
             if (!fileInput.files || !fileInput.files[0]) {
@@ -1026,37 +1180,104 @@
             }
             
             const file = fileInput.files[0];
+            
+            if (file.size > 5 * 1024 * 1024) {
+                alert('파일 크기는 5MB 이하여야 합니다!');
+                return;
+            }
+            
             const reader = new FileReader();
             
-            reader.onload = function(e) {
-                const newImage = {
-                    id: Date.now().toString(),
-                    name: file.name,
-                    url: e.target.result,
-                    created_at: new Date().toISOString()
-                };
-                
-                images.unshift(newImage);
-                saveData();
-                
-                fileInput.value = '';
-                document.getElementById('imagePreview').style.display = 'none';
-                
-                updateAdminImageList();
-                alert('이미지가 추가되었습니다!');
+            reader.onload = async function(e) {
+                if (useSupabase) {
+                    try {
+                        const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
+                        if (adminPassword !== ADMIN_PASSWORD) {
+                            alert('권한이 없습니다!');
+                            return;
+                        }
+                        
+                        const { data, error } = await supabase
+                            .from('images')
+                            .insert([{ name: file.name, url: e.target.result }])
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        
+                        images.unshift(data);
+                        fileInput.value = '';
+                        document.getElementById('imagePreview').style.display = 'none';
+                        
+                        updateGallery();
+                        updateAdminImageList();
+                        alert('이미지가 추가되었습니다!');
+                        
+                    } catch (error) {
+                        console.error('❌ 이미지 추가 실패:', error);
+                        alert('이미지 추가에 실패했습니다.');
+                    }
+                } else {
+                    const newImage = {
+                        id: Date.now().toString(),
+                        name: file.name,
+                        url: e.target.result,
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    images.unshift(newImage);
+                    saveData();
+                    
+                    fileInput.value = '';
+                    document.getElementById('imagePreview').style.display = 'none';
+                    
+                    updateAdminImageList();
+                    updateGallery();
+                    alert('이미지가 추가되었습니다!');
+                }
             };
             
             reader.readAsDataURL(file);
         }
 
-        function deleteImage(imageId) {
+        // === 관리자 기능 - 이미지 삭제 ===
+        async function deleteImage(imageId) {
             if (!confirm('정말 이 이미지를 삭제하시겠습니까?')) return;
             
-            images = images.filter(img => img.id !== imageId);
-            saveData();
-            updateAdminImageList();
+            if (useSupabase) {
+                try {
+                    const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
+                    if (adminPassword !== ADMIN_PASSWORD) {
+                        alert('권한이 없습니다!');
+                        return;
+                    }
+                    
+                    const { error } = await supabase
+                        .from('images')
+                        .delete()
+                        .eq('id', imageId);
+                    
+                    if (error) throw error;
+                    
+                    images = images.filter(img => img.id !== imageId);
+                    updateGallery();
+                    updateAdminImageList();
+                    alert('이미지가 삭제되었습니다!');
+                    
+                } catch (error) {
+                    console.error('❌ 이미지 삭제 실패:', error);
+                    alert('이미지 삭제에 실패했습니다.');
+                }
+            } else {
+                images = images.filter(img => img.id !== imageId);
+                saveData();
+                updateAdminImageList();
+                updateGallery();
+                alert('이미지가 삭제되었습니다!');
+            }
         }
 
+        // === 관리자 목록 업데이트 ===
         function updateAdminPostList() {
             const adminPostList = document.getElementById('adminPostList');
             if (!adminPostList) return;
@@ -1107,7 +1328,7 @@
             });
         }
 
-        // === 글 관리 ===
+        // === 글 목록 업데이트 ===
         function updatePostList() {
             const postList = document.getElementById('postList');
             const emptyFolder = document.getElementById('emptyFolder');
@@ -1144,6 +1365,7 @@
             });
         }
 
+        // === 글 보기 ===
         function viewPost(postId) {
             const post = posts.find(p => p.id == postId);
             if (!post) return;
@@ -1167,7 +1389,7 @@
             currentPostId = null;
         }
 
-        // === 갤러리 관리 ===
+        // === 갤러리 업데이트 ===
         function updateGallery() {
             const galleryGrid = document.getElementById('galleryGrid');
             const emptyGallery = document.getElementById('emptyGallery');
@@ -1287,14 +1509,18 @@
         window.deleteImage = deleteImage;
 
         // === 초기화 ===
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             console.log('🎉 초시공 네트워크 메인 초기화 시작...');
-            loadDemoData();
+            
+            // 데이터 로드
+            await loadData();
+            
+            // 이벤트 리스너 초기화
             initEventListeners();
-            updatePostList();
-            updateGallery();
+            
             console.log('✅ 메인 초기화 완료!');
             console.log('📊 현재 데이터:', posts.length + '개 글, ' + images.length + '개 이미지');
+            console.log('🔧 모드:', useSupabase ? 'Supabase' : 'localStorage');
         });
     </script>
 </body>
