@@ -312,6 +312,158 @@
             display: none;
         }
 
+        /* === 관리자 대시보드 === */
+        .admin-dashboard {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #5B81B3 0%, #4a6d96 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .admin-header h2 {
+            margin: 0 0 10px 0;
+        }
+
+        .admin-logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .admin-logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .admin-section h3 {
+            color: #5B81B3;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .admin-form-group {
+            margin-bottom: 15px;
+        }
+
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .admin-form-group input,
+        .admin-form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .admin-form-group input:focus,
+        .admin-form-group textarea:focus {
+            outline: none;
+            border-color: #5B81B3;
+        }
+
+        .admin-form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .admin-btn {
+            background: #5B81B3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background: #4a6d96;
+        }
+
+        .admin-post-item,
+        .admin-image-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-item-info {
+            flex: 1;
+        }
+
+        .admin-item-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .admin-item-date {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .admin-delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .admin-delete-btn:hover {
+            background: #ff3838;
+        }
+
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         /* === 모달 === */
         .modal {
             position: fixed;
@@ -576,13 +728,62 @@
 
                 <!-- 브라우저 - 관리자 페이지 -->
                 <div class="main-content hidden" id="browserContent">
-                    <div class="admin-login">
+                    <!-- 로그인 화면 -->
+                    <div class="admin-login" id="adminLogin">
                         <div class="admin-login-box">
                             <h2>🔐 관리자 로그인</h2>
                             <p>관리자 페이지에 접근하려면 비밀번호를 입력하세요</p>
                             <input type="password" id="adminPasswordInput" class="admin-password-input" placeholder="관리자 비밀번호 입력">
                             <button class="admin-login-btn" onclick="adminLogin()">로그인</button>
                             <div class="admin-login-error" id="adminLoginError">비밀번호가 틀렸습니다!</div>
+                        </div>
+                    </div>
+
+                    <!-- 관리자 대시보드 -->
+                    <div class="admin-dashboard" id="adminDashboard">
+                        <div class="admin-header">
+                            <h2>🛠️ 관리자 대시보드</h2>
+                            <p>초시공 네트워크 콘텐츠 관리 시스템</p>
+                            <button class="admin-logout-btn" onclick="adminLogout()">로그아웃</button>
+                        </div>
+
+                        <!-- 새 글 작성 -->
+                        <div class="admin-section">
+                            <h3>📝 새 글 작성</h3>
+                            <div class="admin-form-group">
+                                <label for="postTitle">제목</label>
+                                <input type="text" id="postTitle" placeholder="글 제목을 입력하세요">
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="postContent">내용</label>
+                                <textarea id="postContent" placeholder="글 내용을 입력하세요"></textarea>
+                            </div>
+                            <button class="admin-btn" onclick="addPost()">글 추가</button>
+                        </div>
+
+                        <!-- 이미지 업로드 -->
+                        <div class="admin-section">
+                            <h3>🖼️ 이미지 업로드</h3>
+                            <div class="admin-form-group">
+                                <label for="imageFile">이미지 선택</label>
+                                <input type="file" id="imageFile" accept="image/*" onchange="previewImage()">
+                            </div>
+                            <div id="imagePreview" class="image-preview" style="display: none;">
+                                <img id="previewImg" src="" alt="미리보기">
+                            </div>
+                            <button class="admin-btn" onclick="addImage()">이미지 추가</button>
+                        </div>
+
+                        <!-- 글 목록 관리 -->
+                        <div class="admin-section">
+                            <h3>📋 글 목록 관리</h3>
+                            <div id="adminPostList"></div>
+                        </div>
+
+                        <!-- 이미지 목록 관리 -->
+                        <div class="admin-section">
+                            <h3>🎨 이미지 목록 관리</h3>
+                            <div id="adminImageList"></div>
                         </div>
                     </div>
                 </div>
@@ -668,16 +869,33 @@
                 {
                     id: 'demo2',
                     name: '시공간_지도.png',
-                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMGQxMTE3Ii8+CjxwYXRoIGQ9Ik01MCA1MEwxMDAgMzBMMTUwIDgwTDIwMCA0MEwyNTAgNzBMMjgwIDUwIiBzdHJva2U9IiM2NjY2ZmYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNMjAgMTIwTDgwIDEwMEwxNDAgMTQwTDE4MCA5MEwyNDAgMTMwTDI5MCAyMDAiIHN0cm9rZT0iIzY2ZmY2NiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjgwIiByPSI1IiBmaWxsPSIjZmY2NjY2Ii8+CjxjaXJjbGUgY3g9IjIwMCIgY3k9IjQwIiByPSI1IiBmaWxsPSIjZmZmZjY2Ii8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjE0MCIgcj0iNSIgZmlsbD0iIzY2ZmZmZiIvPgo8dGV4dCB4PSIxNTAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiI+8J+XuuKchO+4jyDsl5DqtJPrkJwg7KeA64+EPC90ZXh0Pgo8L3N2Zz4K',
+                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMGQxMTE3Ii8+CjxwYXRoIGQ9Ik01MCA1MEwxMDAgMzBMMTUwIDgwTDIwMCA0MEwyNTAgNzBMMjgwIDUwIiBzdHJva2U9IiM2NjY2ZmYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNMjAgMTIwTDgwIDEwMEwxNDAgMTQwTDE4MCA5MEwyNDAgMTMwTDI5MCAyMDAiIHN0cm9rZT0iIzY2ZmY2NiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjgwIiByPSI1IiBmaWxsPSIjZmY2NjY2Ii8+CjxjaXJjbGUgY3g9IjIwMCIgY3k9IjQwIiByPSI1IiBmaWxsPSIjZmZmZjY2Ii8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjE0MCIgcj0iNSIgZmlsbD0iIzY2ZmZmZiIvPgo8dGV4dCB4PSIxNTAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiI+8J+XuuKchO+4jyDsl5DqtJnrkJwg7KeA64+EPC90ZXh0Pgo8L3N2Zz4K',
                     created_at: "2024-12-02T14:30:00.000Z"
                 },
                 {
                     id: 'demo3',
                     name: '네트워크_허브.gif',
-                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI25ldEdyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI3NSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9Ijc1IiBjeT0iMTQwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjE0MCIgcj0iMTAiIGZpbGw9IiM2NmZmNjYiIG9wYWNpdHk9IjAuNyIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iNzUiIHkyPSI2MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iMjI1IiB5Mj0iNjAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPGxpbmUgeDE9IjE1MCIgeTE9IjEwMCIgeDI9Ijc1IiB5Mj0iMTQwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CjxsaW5lIHgxPSIxNTAiIHkxPSIxMDAiIHgyPSIyMjUiIHkyPSIxNDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPHR5ZXQgeD0iMTUwIiB5PSIxOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPvCfpKEg64Kg7Yq47JuI7YGs7ZuICOygleuztDwvdGV4dD4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0ibmV0R3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTE2NWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzMzMTY2NjtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K',
+                    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI25ldEdyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI3NSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9Ijc1IiBjeT0iMTQwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjE0MCIgcj0iMTAiIGZpbGw9IiM2NmZmNjYiIG9wYWNpdHk9IjAuNyIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iNzUiIHkyPSI2MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iMjI1IiB5Mj0iNjAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPGxpbmUgeDE9IjE1MCIgeTE9IjEwMCIgeDI9Ijc1IiB5Mj0iMTQwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CjxsaW5lIHgxPSIxNTAiIHkxPSIxMDAiIHgyPSIyMjUiIHkyPSIxNDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPHR5ZXQgeD0iMTUwIiB5PSIxOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPvCfpKEg64Kg7Yq47JuM7YGs7ZuICOygleuztDwvdGV4dD4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0ibmV0R3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTE2NWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzMzMTY2NjtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K',
                     created_at: "2024-12-03T09:15:00.000Z"
                 }
             ];
+
+            // localStorage에서 데이터 불러오기
+            const savedPosts = localStorage.getItem('cosmosNetworkPosts');
+            const savedImages = localStorage.getItem('cosmosNetworkImages');
+            
+            if (savedPosts) {
+                posts = JSON.parse(savedPosts);
+            }
+            if (savedImages) {
+                images = JSON.parse(savedImages);
+            }
+        }
+
+        // === 데이터 저장 ===
+        function saveData() {
+            localStorage.setItem('cosmosNetworkPosts', JSON.stringify(posts));
+            localStorage.setItem('cosmosNetworkImages', JSON.stringify(images));
         }
 
         // === 창 관리 ===
@@ -697,6 +915,9 @@
                 updateGallery();
             } else if (type === 'browser') {
                 document.getElementById('browserContent').classList.remove('hidden');
+                if (isAdminLoggedIn) {
+                    showAdminDashboard();
+                }
             }
             
             overlay.classList.add('active');
@@ -718,7 +939,7 @@
             
             if (inputPassword === ADMIN_PASSWORD) {
                 isAdminLoggedIn = true;
-                alert('관리자 로그인 성공! (관리 기능은 준비 중입니다)');
+                showAdminDashboard();
                 console.log('✅ 관리자 로그인 성공');
             } else {
                 if (adminLoginError) adminLoginError.style.display = 'block';
@@ -726,6 +947,164 @@
                 adminPasswordInput.focus();
                 console.log('❌ 관리자 로그인 실패');
             }
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminLogin').style.display = 'flex';
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminLoginError').style.display = 'none';
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            updateAdminPostList();
+            updateAdminImageList();
+        }
+
+        // === 관리자 기능 ===
+        function addPost() {
+            const titleInput = document.getElementById('postTitle');
+            const contentInput = document.getElementById('postContent');
+            
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
+            
+            if (!title || !content) {
+                alert('제목과 내용을 모두 입력해주세요!');
+                return;
+            }
+            
+            const newPost = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                created_at: new Date().toISOString()
+            };
+            
+            posts.unshift(newPost);
+            saveData();
+            
+            titleInput.value = '';
+            contentInput.value = '';
+            
+            updateAdminPostList();
+            alert('글이 추가되었습니다!');
+        }
+
+        function deletePost(postId) {
+            if (!confirm('정말 이 글을 삭제하시겠습니까?')) return;
+            
+            posts = posts.filter(p => p.id !== postId);
+            saveData();
+            updateAdminPostList();
+        }
+
+        function previewImage() {
+            const fileInput = document.getElementById('imageFile');
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function addImage() {
+            const fileInput = document.getElementById('imageFile');
+            
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('이미지를 선택해주세요!');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const newImage = {
+                    id: Date.now().toString(),
+                    name: file.name,
+                    url: e.target.result,
+                    created_at: new Date().toISOString()
+                };
+                
+                images.unshift(newImage);
+                saveData();
+                
+                fileInput.value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                
+                updateAdminImageList();
+                alert('이미지가 추가되었습니다!');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function deleteImage(imageId) {
+            if (!confirm('정말 이 이미지를 삭제하시겠습니까?')) return;
+            
+            images = images.filter(img => img.id !== imageId);
+            saveData();
+            updateAdminImageList();
+        }
+
+        function updateAdminPostList() {
+            const adminPostList = document.getElementById('adminPostList');
+            if (!adminPostList) return;
+            
+            adminPostList.innerHTML = '';
+            
+            if (posts.length === 0) {
+                adminPostList.innerHTML = '<p style="color: #999;">작성된 글이 없습니다.</p>';
+                return;
+            }
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'admin-post-item';
+                postElement.innerHTML = `
+                    <div class="admin-item-info">
+                        <div class="admin-item-title">${escapeHtml(post.title)}</div>
+                        <div class="admin-item-date">${new Date(post.created_at).toLocaleString('ko-KR')}</div>
+                    </div>
+                    <button class="admin-delete-btn" onclick="deletePost(${post.id})">삭제</button>
+                `;
+                adminPostList.appendChild(postElement);
+            });
+        }
+
+        function updateAdminImageList() {
+            const adminImageList = document.getElementById('adminImageList');
+            if (!adminImageList) return;
+            
+            adminImageList.innerHTML = '';
+            
+            if (images.length === 0) {
+                adminImageList.innerHTML = '<p style="color: #999;">업로드된 이미지가 없습니다.</p>';
+                return;
+            }
+            
+            images.forEach(image => {
+                const imageElement = document.createElement('div');
+                imageElement.className = 'admin-image-item';
+                imageElement.innerHTML = `
+                    <div class="admin-item-info">
+                        <div class="admin-item-title">${escapeHtml(image.name)}</div>
+                        <div class="admin-item-date">${new Date(image.created_at).toLocaleString('ko-KR')}</div>
+                    </div>
+                    <button class="admin-delete-btn" onclick="deleteImage('${image.id}')">삭제</button>
+                `;
+                adminImageList.appendChild(imageElement);
+            });
         }
 
         // === 글 관리 ===
@@ -900,6 +1279,12 @@
         window.showImageModal = showImageModal;
         window.closeImageModal = closeImageModal;
         window.adminLogin = adminLogin;
+        window.adminLogout = adminLogout;
+        window.addPost = addPost;
+        window.deletePost = deletePost;
+        window.previewImage = previewImage;
+        window.addImage = addImage;
+        window.deleteImage = deleteImage;
 
         // === 초기화 ===
         window.addEventListener('load', () => {
