@@ -166,6 +166,12 @@
             background: transparent;
             height: 100%;
             box-sizing: border-box;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        .file-explorer-content::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
 
         .post-list {
