@@ -1169,25 +1169,58 @@
             
             const file = fileInput.files[0];
             
-            if (file.size > 5 * 1024 * 1024) {
-                alert('파일 크기는 5MB 이하여야 합니다!');
-                return;
-            }
+            // 이미지 리사이즈 및 압축
+            const compressImage = (file, maxWidth, maxHeight, quality) => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            // 비율 유지하며 크기 조정
+                            if (width > height) {
+                                if (width > maxWidth) {
+                                    height = height * (maxWidth / width);
+                                    width = maxWidth;
+                                }
+                            } else {
+                                if (height > maxHeight) {
+                                    width = width * (maxHeight / height);
+                                    height = maxHeight;
+                                }
+                            }
+                            
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            // JPEG로 압축 (품질 조정)
+                            canvas.toBlob((blob) => {
+                                const reader = new FileReader();
+                                reader.onloadend = () => resolve(reader.result);
+                                reader.readAsDataURL(blob);
+                            }, 'image/jpeg', quality);
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            };
             
-            const reader = new FileReader();
-            
-            reader.onload = async function(e) {
+            try {
+                // 이미지 압축 (최대 1920x1920, 품질 0.8)
+                const compressedImage = await compressImage(file, 1920, 1920, 0.8);
+                
                 if (useSupabase) {
                     try {
-                        const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
-                        if (adminPassword !== ADMIN_PASSWORD) {
-                            alert('권한이 없습니다!');
-                            return;
-                        }
-                        
                         const { data, error } = await supabase
                             .from('images')
-                            .insert([{ name: file.name, url: e.target.result }])
+                            .insert([{ name: file.name, url: compressedImage }])
                             .select()
                             .single();
                         
@@ -1209,7 +1242,7 @@
                     const newImage = {
                         id: Date.now().toString(),
                         name: file.name,
-                        url: e.target.result,
+                        url: compressedImage,
                         created_at: new Date().toISOString()
                     };
                     
@@ -1223,9 +1256,10 @@
                     updateGallery();
                     alert('이미지가 추가되었습니다!');
                 }
-            };
-            
-            reader.readAsDataURL(file);
+            } catch (error) {
+                console.error('❌ 이미지 압축 실패:', error);
+                alert('이미지 처리에 실패했습니다.');
+            }
         }
 
         // === 관리자 기능 - 이미지 삭제 ===
@@ -1234,12 +1268,6 @@
             
             if (useSupabase) {
                 try {
-                    const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
-                    if (adminPassword !== ADMIN_PASSWORD) {
-                        alert('권한이 없습니다!');
-                        return;
-                    }
-                    
                     const { error } = await supabase
                         .from('images')
                         .delete()
