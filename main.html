@@ -837,16 +837,15 @@
     <script>
         console.log('🎉 초시공 네트워크 메인 시작...');
         
-        // === Supabase 설정 (옵션) ===
-        // Supabase를 사용하려면 아래 값들을 실제 값으로 변경하세요
+        // === Supabase 설정 ===
         const SUPABASE_URL = 'https://oaahwbefxmgusdmpxixz.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hYWh3YmVmeG1ndXNkbXB4aXh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExOTkwMTUsImV4cCI6MjA2Njc3NTAxNX0.cGydPQeczMEKE2g1pmTH3ENSnXTodxmnImWv8dM5nek';
         
         let supabase = null;
         let useSupabase = false;
         
-        // Supabase 초기화 시도
-        if (SUPABASE_URL !== 'https://YOUR_PROJECT_URL.supabase.co' && SUPABASE_ANON_KEY !== 'YOUR_ANON_KEY') {
+        // Supabase 초기화
+        if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'https://YOUR_PROJECT_URL.supabase.co') {
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 useSupabase = true;
@@ -913,46 +912,9 @@
                         title: "초시공 네트워크에 오신 것을 환영합니다",
                         content: "이곳은 시공간을 초월한 디지털 공간입니다.\n\n다양한 차원의 정보와 이야기들이 교차하는 특별한 장소입니다.\n\n관리자 로그인을 통해 새로운 콘텐츠를 추가할 수 있습니다.",
                         created_at: "2024-12-01T10:00:00.000Z"
-                    },
-                    {
-                        id: 2,
-                        title: "차원 이동 로그 #001",
-                        content: "오늘 새로운 차원을 발견했습니다.\n\n좌표: X-742, Y-338, Z-901\n상태: 안정\n\n이 차원은 특이하게도 시간의 흐름이 역방향으로 진행됩니다.\n과거로 향하는 메시지들을 확인할 수 있었습니다.\n\n추가 탐사가 필요합니다.",
-                        created_at: "2024-12-02T14:30:00.000Z"
-                    },
-                    {
-                        id: 3,
-                        title: "연결된 세계들",
-                        content: "네트워크를 통해 연결된 다양한 세계들:\n\n1. 디지털 공간\n2. 물리적 현실\n3. 의식의 영역\n4. 상상의 차원\n\n각각의 세계는 고유한 법칙과 특성을 가지고 있으며,\n초시공 네트워크를 통해 상호작용합니다.",
-                        created_at: "2024-12-03T09:15:00.000Z"
-                    },
-                    {
-                        id: 4,
-                        title: "시간 여행자의 메모",
-                        content: "2157년에서 온 메시지:\n\n'과거의 여러분에게 전합니다.\n미래는 여러분이 만드는 선택들로 이루어집니다.\n\n기술과 인간성의 균형을 잃지 마세요.\n초시공 네트워크는 그 균형의 상징입니다.'\n\n- 미래의 네트워크 관리자",
-                        created_at: "2024-12-04T18:45:00.000Z"
                     }
                 ],
-                images: [
-                    {
-                        id: 'demo1',
-                        name: '차원의_문.jpg',
-                        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2dyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iNTAiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4zKSIvPgo8dGV4dCB4PSIxNTAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCI+8J+MgCDssKjsm5Q8L3RleHQ+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNGY0NmU1O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3YzNhZWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2Zz4K',
-                        created_at: "2024-12-01T10:00:00.000Z"
-                    },
-                    {
-                        id: 'demo2',
-                        name: '시공간_지도.png',
-                        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMGQxMTE3Ii8+CjxwYXRoIGQ9Ik01MCA1MEwxMDAgMzBMMTUwIDgwTDIwMCA0MEwyNTAgNzBMMjgwIDUwIiBzdHJva2U9IiM2NjY2ZmYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNMjAgMTIwTDgwIDEwMEwxNDAgMTQwTDE4MCA5MEwyNDAgMTMwTDI5MCAyMDAiIHN0cm9rZT0iIzY2ZmY2NiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjgwIiByPSI1IiBmaWxsPSIjZmY2NjY2Ii8+CjxjaXJjbGUgY3g9IjIwMCIgY3k9IjQwIiByPSI1IiBmaWxsPSIjZmZmZjY2Ii8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjE0MCIgcj0iNSIgZmlsbD0iIzY2ZmZmZiIvPgo8dGV4dCB4PSIxNTAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiI+8J+XuuKchO+4jyDsl5DqtJnrkJwg7KeA64+EPC90ZXh0Pgo8L3N2Zz4K',
-                        created_at: "2024-12-02T14:30:00.000Z"
-                    },
-                    {
-                        id: 'demo3',
-                        name: '네트워크_허브.gif',
-                        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI25ldEdyYWQpIi8+CjxjaXJjbGUgY3g9IjE1MCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI3NSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9Ijc1IiBjeT0iMTQwIiByPSIxMCIgZmlsbD0iIzY2ZmY2NiIgb3BhY2l0eT0iMC43Ii8+CjxjaXJjbGUgY3g9IjIyNSIgY3k9IjE0MCIgcj0iMTAiIGZpbGw9IiM2NmZmNjYiIG9wYWNpdHk9IjAuNyIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iNzUiIHkyPSI2MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgo8bGluZSB4MT0iMTUwIiB5MT0iMTAwIiB4Mj0iMjI1IiB5Mj0iNjAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPGxpbmUgeDE9IjE1MCIgeTE9IjEwMCIgeDI9Ijc1IiB5Mj0iMTQwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CjxsaW5lIHgxPSIxNTAiIHkxPSIxMDAiIHgyPSIyMjUiIHkyPSIxNDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz4KPHR5ZXQgeD0iMTUwIiB5PSIxOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPvCfpKEg64Kg7Yq47JuM7YGs7ZuICOygleuztDwvdGV4dD4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0ibmV0R3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxYTE2NWQ7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzMzMTY2NjtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K',
-                        created_at: "2024-12-03T09:15:00.000Z"
-                    }
-                ]
+                images: []
             };
 
             // localStorage에서 데이터 불러오기
@@ -1056,7 +1018,7 @@
             updateAdminImageList();
         }
 
-        // === 관리자 기능 - 글 추가 ===
+        // === 관리자 기능 - 글 추가 (prompt 없음) ===
         async function addPost() {
             const titleInput = document.getElementById('postTitle');
             const contentInput = document.getElementById('postContent');
@@ -1089,7 +1051,7 @@
                     
                 } catch (error) {
                     console.error('❌ 글 추가 실패:', error);
-                    alert('글 추가에 실패했습니다. 다시 시도해주세요.');
+                    alert('글 추가에 실패했습니다. Supabase 권한을 확인하세요.');
                 }
             } else {
                 const newPost = {
@@ -1111,7 +1073,7 @@
             }
         }
 
-        // === 관리자 기능 - 글 삭제 ===
+        // === 관리자 기능 - 글 삭제 (prompt 없음) ===
         async function deletePost(postId) {
             if (!confirm('정말 이 글을 삭제하시겠습니까?')) return;
             
@@ -1131,7 +1093,7 @@
                     
                 } catch (error) {
                     console.error('❌ 글 삭제 실패:', error);
-                    alert('글 삭제에 실패했습니다.');
+                    alert('글 삭제에 실패했습니다. Supabase 권한을 확인하세요.');
                 }
             } else {
                 posts = posts.filter(p => p.id !== postId);
@@ -1158,7 +1120,7 @@
             }
         }
 
-        // === 관리자 기능 - 이미지 추가 ===
+        // === 관리자 기능 - 이미지 추가 (자동 압축, prompt 없음) ===
         async function addImage() {
             const fileInput = document.getElementById('imageFile');
             
@@ -1236,7 +1198,7 @@
                         
                     } catch (error) {
                         console.error('❌ 이미지 추가 실패:', error);
-                        alert('이미지 추가에 실패했습니다.');
+                        alert('이미지 추가에 실패했습니다. Supabase 권한을 확인하세요.');
                     }
                 } else {
                     const newImage = {
@@ -1262,7 +1224,7 @@
             }
         }
 
-        // === 관리자 기능 - 이미지 삭제 ===
+        // === 관리자 기능 - 이미지 삭제 (prompt 없음) ===
         async function deleteImage(imageId) {
             if (!confirm('정말 이 이미지를 삭제하시겠습니까?')) return;
             
@@ -1275,17 +1237,17 @@
                     
                     if (error) throw error;
                     
-                    images = images.filter(img => img.id !== imageId);
+                    images = images.filter(img => img.id != imageId);
                     updateGallery();
                     updateAdminImageList();
                     alert('이미지가 삭제되었습니다!');
                     
                 } catch (error) {
                     console.error('❌ 이미지 삭제 실패:', error);
-                    alert('이미지 삭제에 실패했습니다.');
+                    alert('이미지 삭제에 실패했습니다. Supabase 권한을 확인하세요.');
                 }
             } else {
-                images = images.filter(img => img.id !== imageId);
+                images = images.filter(img => img.id != imageId);
                 saveData();
                 updateAdminImageList();
                 updateGallery();
