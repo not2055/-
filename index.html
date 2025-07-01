@@ -13,30 +13,12 @@
 
         body {
             font-family: 'HCR Dotum', sans-serif;
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* === 로딩 화면 === */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background: #0c1627;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            z-index: 10000;
-            transition: opacity 0.6s ease-out;
-        }
-
-        .loading-screen.fade-out {
-            opacity: 0;
-            pointer-events: none;
         }
 
         .loading-container {
@@ -139,382 +121,37 @@
             }
         }
 
-        /* === 메인 화면 === */
-        .main-screen {
-            background: linear-gradient(135deg, #7fb3d3 0%, #5a9fd4 100%);
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-            opacity: 0;
-            transition: opacity 0.8s ease-in;
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
         }
 
-        .main-screen.show {
-            opacity: 1;
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
-        /* === 데스크톱 아이콘 === */
-        .desktop-icons {
-            position: absolute;
-            top: calc(50px + 2cm);
-            left: 5cm;
-            z-index: 1;
-        }
-
-        .desktop-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 3cm;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            opacity: 0;
-            animation: iconFadeIn 0.6s ease-out forwards;
-        }
-
-        .desktop-icon:nth-child(1) { animation-delay: 0.2s; }
-        .desktop-icon:nth-child(2) { animation-delay: 0.4s; }
-        .desktop-icon:nth-child(3) { animation-delay: 0.6s; }
-
-        .desktop-icon:hover {
-            transform: scale(1.1);
-        }
-
-        @keyframes iconFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* === 메인 창 === */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .window {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.7);
-            width: 76%;
-            max-width: 960px;
-            height: 72%;
-            background: #5B81B3;
-            border-radius: 20px;
-            overflow: hidden;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            padding: 30px;
-        }
-
-        .overlay.active .window {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .top-icons {
-            position: absolute;
-            top: 10px;
-            right: 30px;
-            display: flex;
-            gap: 15px;
-            z-index: 10;
-        }
-
-        .top-icon {
-            width: 38px;
-            height: 38px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            border-radius: 6px;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .top-icon:hover {
-            transform: scale(1.1);
-        }
-
-        .top-icon img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-        }
-
-        .window-content {
-            height: calc(100% - 30px);
-            background: #f5f5dc;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin-top: 30px;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            background: #f5f5dc;
-            color: #333;
-            font-size: 16px;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* === 나머지 스타일들은 기존과 동일 === */
-        .file-explorer {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            height: 100%;
-        }
-
-        .file-explorer-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: transparent;
-            height: 100%;
-            box-sizing: border-box;
-        }
-
-        .post-list {
-            padding-top: 20px;
-            height: calc(100vh - 300px);
-            max-height: 600px;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .post-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .post-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .post-title {
-            font-weight: bold;
-            color: #5B81B3;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-
-        .post-content {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
-        }
-
-        .post-date {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .empty-folder {
-            text-align: center;
-            color: #666;
-            margin-top: 50px;
-        }
-
-        .empty-folder-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        /* 관리자 페이지 스타일들 */
-        .admin-login {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .admin-login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .admin-login-box h2 {
-            color: #5B81B3;
-            margin-bottom: 20px;
-        }
-
-        .admin-password-input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            text-align: center;
-            margin: 20px 0;
-            transition: border-color 0.3s ease;
-        }
-
-        .admin-password-input:focus {
-            outline: none;
-            border-color: #5B81B3;
-            box-shadow: 0 0 0 3px rgba(91, 129, 179, 0.1);
-        }
-
-        .admin-login-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #5B81B3 0%, #4a6d96 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .admin-login-btn:hover {
-            background: linear-gradient(135deg, #4a6d96 0%, #3a5a7a 100%);
-        }
-
-        .admin-login-error {
-            color: #ff4757;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
+        @media (max-width: 768px) {
+            .progress-container {
+                width: 250px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 로딩 화면 -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-container">
-            <div class="logo-text" id="logoText"></div>
-            
-            <div class="progress-container">
-                <div class="progress-label">로딩 중...</div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-                <div class="progress-percentage" id="progressText">0%</div>
-                <div class="loading-status" id="loadingStatus">시스템을 준비하고 있습니다</div>
+    <div class="loading-container" id="loadingContainer">
+        <div class="logo-text" id="logoText"></div>
+        
+        <div class="progress-container">
+            <div class="progress-label">로딩 중...</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar" id="progressBar"></div>
             </div>
-        </div>
-    </div>
-
-    <!-- 메인 화면 -->
-    <div class="main-screen" id="mainScreen">
-        <!-- 데스크톱 아이콘들 -->
-        <div class="desktop-icons">
-            <div class="desktop-icon" data-type="folder">
-                <div class="icon-image folder-icon">
-                    <img src="https://i.ibb.co/1Gt7DfcH/image.png" alt="폴더" style="width: 100px; height: 100px; object-fit: contain;">
-                </div>
-            </div>
-            <div class="desktop-icon" data-type="gallery">
-                <div class="icon-image image-icon">
-                    <img src="https://i.ibb.co/JwSq6T6N/image.png" alt="갤러리" style="width: 80px; height: 80px; object-fit: contain;">
-                </div>
-            </div>
-            <div class="desktop-icon" data-type="browser">
-                <div class="icon-image browser-icon">
-                    <img src="https://i.ibb.co/qMhQTP83/image.png" alt="브라우저" style="width: 80px; height: 80px; object-fit: contain;">
-                </div>
-            </div>
-        </div>
-
-        <!-- 메인 창 -->
-        <div class="overlay" id="overlay">
-            <div class="window" id="window">
-                <!-- 상단 아이콘들 -->
-                <div class="top-icons">
-                    <div class="top-icon">
-                        <img src="https://i.ibb.co/C3kZTmHJ/image.png" alt="아이콘1" style="width: 30px; height: 30px; object-fit: contain;">
-                    </div>
-                    <div class="top-icon" onclick="syncData()">
-                        <img src="https://i.ibb.co/LbGhYHH/image.png" alt="동기화" style="width: 30px; height: 30px; object-fit: contain;">
-                    </div>
-                    <div class="top-icon" onclick="closeWindow()">
-                        <img src="https://i.ibb.co/8LGG3FnW/x.png" alt="닫기" style="width: 30px; height: 30px; object-fit: contain;">
-                    </div>
-                </div>
-                
-                <div class="window-content">
-                    <!-- 폴더 -->
-                    <div class="main-content" id="folderContent">
-                        <div class="file-explorer">
-                            <div class="file-explorer-content">
-                                <div class="empty-folder" id="emptyFolder">
-                                    <div class="empty-folder-icon">📂</div>
-                                    <p>폴더가 비어있습니다</p>
-                                </div>
-                                <div class="post-list" id="postList"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 브라우저 - 관리자 페이지 -->
-                    <div class="main-content hidden" id="browserContent">
-                        <!-- 관리자 로그인 화면 -->
-                        <div id="adminLogin" class="admin-login">
-                            <div class="admin-login-box">
-                                <h2>🔐 관리자 로그인</h2>
-                                <p>관리자 페이지에 접근하려면 비밀번호를 입력하세요</p>
-                                <input type="password" id="adminPasswordInput" class="admin-password-input" placeholder="관리자 비밀번호 입력" maxlength="20">
-                                <button class="admin-login-btn" onclick="adminLogin()">로그인</button>
-                                <div class="admin-login-error" id="adminLoginError">비밀번호가 틀렸습니다!</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="progress-percentage" id="progressText">0%</div>
+            <div class="loading-status" id="loadingStatus">시스템을 준비하고 있습니다</div>
         </div>
     </div>
 
     <script>
-        // === 전역 변수 ===
-        let posts = [];
-        let images = [];
-        let currentView = 'folder';
-        let isAdminLoggedIn = false;
-        const ADMIN_PASSWORD = '4호';
-
-        // === 로딩 화면 관리 ===
         const loadingSteps = [
             { progress: 10, message: "시스템을 초기화하고 있습니다" },
             { progress: 25, message: "리소스를 로드하고 있습니다" },
@@ -526,12 +163,11 @@
         ];
 
         let currentStep = 0;
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const loadingStatus = document.getElementById('loadingStatus');
 
         function updateProgress() {
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const loadingStatus = document.getElementById('loadingStatus');
-
             if (currentStep < loadingSteps.length) {
                 const step = loadingSteps[currentStep];
                 
@@ -559,24 +195,21 @@
                     setTimeout(updateProgress, delay);
                 } else {
                     setTimeout(() => {
-                        const loadingScreen = document.getElementById('loadingScreen');
-                        const mainScreen = document.getElementById('mainScreen');
-                        
-                        loadingScreen.classList.add('fade-out');
+                        document.body.classList.add('fade-out');
                         setTimeout(() => {
-                            loadingScreen.style.display = 'none';
-                            mainScreen.classList.add('show');
+                            window.location.href = 'main.html';
                         }, 600);
                     }, 500);
                 }
             }
         }
 
-        function initializeLoading() {
+        window.addEventListener('load', () => {
             const logoText = document.getElementById('logoText');
             const mainText = '우주정거장 도킹중';
             let index = 0;
             let dotCount = 0;
+            let dotInterval;
             
             logoText.classList.add('typewriter');
             
@@ -589,7 +222,7 @@
                     logoText.classList.remove('typewriter');
                     logoText.innerHTML = mainText;
                     
-                    const dotInterval = setInterval(() => {
+                    dotInterval = setInterval(() => {
                         if (dotCount < 3) {
                             dotCount++;
                             let dots = '.'.repeat(dotCount);
@@ -599,110 +232,13 @@
                 }
             }
             
-            setTimeout(typeWriter, 500);
-            setTimeout(updateProgress, 3000);
-        }
-
-        // === 창 관리 ===
-        function showWindow(type = 'folder') {
-            const overlay = document.getElementById('overlay');
-            currentView = type;
+            setTimeout(() => {
+                typeWriter();
+            }, 500);
             
-            document.getElementById('folderContent').classList.add('hidden');
-            document.getElementById('browserContent').classList.add('hidden');
-            
-            if (type === 'folder') {
-                document.getElementById('folderContent').classList.remove('hidden');
-            } else if (type === 'browser') {
-                document.getElementById('browserContent').classList.remove('hidden');
-                showAdminPage();
-            }
-            
-            overlay.classList.add('active');
-        }
-
-        function closeWindow() {
-            const overlay = document.getElementById('overlay');
-            overlay.classList.remove('active');
-        }
-
-        // === 관리자 페이지 ===
-        function showAdminPage() {
-            const adminLogin = document.getElementById('adminLogin');
-            const adminPasswordInput = document.getElementById('adminPasswordInput');
-            
-            if (adminPasswordInput) {
-                adminPasswordInput.value = '';
-                adminPasswordInput.focus();
-            }
-        }
-
-        function adminLogin() {
-            const adminPasswordInput = document.getElementById('adminPasswordInput');
-            const adminLoginError = document.getElementById('adminLoginError');
-            
-            if (!adminPasswordInput) return;
-            
-            const inputPassword = adminPasswordInput.value.trim();
-            
-            if (inputPassword === ADMIN_PASSWORD) {
-                isAdminLoggedIn = true;
-                alert('로그인 성공! (관리자 기능은 원본 코드에서 확인하세요)');
-                console.log('✅ 관리자 로그인 성공');
-            } else {
-                if (adminLoginError) adminLoginError.style.display = 'block';
-                adminPasswordInput.value = '';
-                adminPasswordInput.focus();
-                console.log('❌ 관리자 로그인 실패');
-            }
-        }
-
-        function syncData() {
-            console.log('🔄 동기화 기능 (전체 코드에서 구현됨)');
-        }
-
-        // === 이벤트 리스너 ===
-        function initEventListeners() {
-            const overlay = document.getElementById('overlay');
-            if (overlay) {
-                overlay.addEventListener('click', (e) => {
-                    if (e.target.id === 'overlay') closeWindow();
-                });
-            }
-
-            const adminPasswordInput = document.getElementById('adminPasswordInput');
-            if (adminPasswordInput) {
-                adminPasswordInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') adminLogin();
-                });
-            }
-
-            document.querySelectorAll('.desktop-icon').forEach((icon) => {
-                icon.addEventListener('click', () => {
-                    const type = icon.dataset.type;
-                    showWindow(type);
-                });
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeWindow();
-                }
-            });
-        }
-
-        // === 전역 함수 등록 ===
-        window.showWindow = showWindow;
-        window.closeWindow = closeWindow;
-        window.adminLogin = adminLogin;
-        window.syncData = syncData;
-
-        // === 초기화 ===
-        window.addEventListener('load', () => {
-            console.log('🎉 초시공 네트워크 초기화 시작...');
-            initializeLoading();
-            initEventListeners();
-            console.log('✅ 초기화 완료!');
+            setTimeout(() => {
+                updateProgress();
+            }, 3000);
         });
     </script>
 </body>
