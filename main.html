@@ -1071,12 +1071,6 @@
             
             if (useSupabase) {
                 try {
-                    const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
-                    if (adminPassword !== ADMIN_PASSWORD) {
-                        alert('권한이 없습니다!');
-                        return;
-                    }
-                    
                     const { data, error } = await supabase
                         .from('posts')
                         .insert([{ title: title, content: content }])
@@ -1123,12 +1117,6 @@
             
             if (useSupabase) {
                 try {
-                    const adminPassword = prompt('관리자 비밀번호를 다시 입력하세요:');
-                    if (adminPassword !== ADMIN_PASSWORD) {
-                        alert('권한이 없습니다!');
-                        return;
-                    }
-                    
                     const { error } = await supabase
                         .from('posts')
                         .delete()
